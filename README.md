@@ -26,6 +26,7 @@ Note: Requires python, python-evdev, and python-pyqt6.
 * Download the [binary](https://github.com/deliriouspork/DePk-Sensitivity-Matcher/releases).
 * chmod +x DePkSensMatch
 * ./DePkSensMatch
+
 Note: Created with pyinstaller --noconfirm --onefile --windowed --add-data "mainwindow.ui:." main.py
 
 ## Usage
