@@ -17,7 +17,7 @@ Due to Wayland's security architecture this program **WILL NOT WORK** unless the
 ### Arch:
 ```shell
 git clone https://github.com/deliriouspork/DePk-Sensitivity-Matcher
-cd DePk\ Sensitivity\ Matcher/
+cd DePk-Sensitivity-Matcher/
 python main.py
 ```
 Note: Requires python, python-evdev, and python-pyqt6.
