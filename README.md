@@ -6,18 +6,18 @@ A Python-based tool for matching mouse sensitivity between 3D games on Linux usi
 Heavily inspired by [Kovaak's Sensitivity Matcher](https://github.com/KovaaK/SensitivityMatcher/).
 
 ## Installation
-Only *officially* support on Arch as I havn't the means (nor the inclination) to test on other versions. Should work just swimmingly on *most* other distributions.
+Only *officially* supported on Arch as I haven't the means (nor the inclination) to test on other versions. Should work just swimmingly on *most* other distributions.
 
 I have also provided a binary. I wouldn't recommend it as it is quite large but is always an option.
 
-Due to the waylands security architecture this program **WILL NOT WORK** unless the user running the program is a member of the **input** group.
+Due to Wayland's security architecture this program **WILL NOT WORK** unless the user running the program is a member of the **input** group.
 
 **WARNING:** Having your user be a member of the input group is generally not advised as it *can* make you more susceptible to keyloggers and other attacks. What I do, and what I'd recommend you do as well, is to run `newgrp input` in your terminal before starting the application. This adds your user to the input group **ONLY** for your current shell. 
 
 ### Arch:
 ```shell
 git clone https://github.com/deliriouspork/DePk-Sensitivity-Matcher
-cd cd DePk\ Sensitivity\ Matcher/
+cd DePk\ Sensitivity\ Matcher/
 python main.py
 ```
 Note: Requires python, python-evdev, and python-pyqt6.
@@ -25,7 +25,7 @@ Note: Requires python, python-evdev, and python-pyqt6.
 ### Binary:
 * Download the [binary](https://github.com/deliriouspork/DePk-Sensitivity-Matcher/releases).
 * chmod +x DePkSensMatch
-* ./ DePkSensMatch
+* ./DePkSensMatch
 Note: Created with pyinstaller --noconfirm --onefile --windowed --add-data "mainwindow.ui:." main.py
 
 ## Usage
@@ -37,4 +37,4 @@ Run the tool and enter your sensitivity and game/engine. Open the game you wish 
 * Add more presets
 * Make my shit code less shit 
 
-Special Note: Please be careful when running programs you've found online. Just because a project is open source does **NOT** mean that it is garunteed to be safe. I have basically written a key-logger just to match sensitivity in video games. If you are not competent in python and you have not personally removed my code, I'd recommend **NOT** running and installing this.
+Special Note: Please be careful when running programs you've found online. Just because a project is open source does **NOT** mean that it is guaranteed to be safe. I have basically written a key-logger just to match sensitivity in video games. If you are not competent in python and you have not personally removed my code, I'd recommend **NOT** running and installing this.
