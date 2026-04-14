@@ -1,6 +1,16 @@
-import sys
+import sys, os
 from PyQt6 import QtWidgets, uic
 from hotkeys import GlobalHotkeyWorker # import class from hotkeys.py
+
+''' Pyinstaller shit '''
+def resource_path(relative_path):
+	try:
+		# PyInstaller creates a temp folder and stores path in _MEIPASS
+		base_path = sys._MEIPASS
+	except Exception:
+		base_path = os.path.abspath(".")
+
+	return os.path.join(base_path, relative_path)
 
 def on_yaw_change():
 	if window.presetYaw.currentText() == 'Quake/Source':
@@ -55,7 +65,7 @@ def mousePressEvent(event):
 
 app = QtWidgets.QApplication(sys.argv)
 
-window = uic.loadUi("mainwindow.ui")
+window = uic.loadUi(resource_path("mainwindow.ui")) # pyinstaller fix
 
 # Setup Hotkey Worker
 worker = GlobalHotkeyWorker()
