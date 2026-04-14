@@ -14,7 +14,7 @@ Due to the waylands security architecture this program **WILL NOT WORK** unless 
 
 ### Arch:
 ```shell
-git clone URL
+git clone https://github.com/deliriouspork/DePk-Sensitivity-Matcher
 cd cd DePk\ Sensitivity\ Matcher/
 python main.py
 ```
