@@ -17,7 +17,7 @@ class GlobalHotkeyWorker(QtCore.QThread):
         self.vmouse = UInput(capabilities, name="Sensitivity-Matcher-Virtual-Mouse")
 
     def move_mouse_relative(self, total_x, speed_multiplier):
-        # Base step size is 10 pixels multiply by speed.
+        # Base step size is 100 pixels multiply by speed.
         step_size = 100 * speed_multiplier
 
         # Determine direction

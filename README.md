@@ -12,7 +12,7 @@ I have also provided a binary. I wouldn't recommend it as it is quite large but 
 
 Due to Wayland's security architecture this program **WILL NOT WORK** unless the user running the program is a member of the **input** group.
 
-**WARNING:** Having your user be a member of the input group is generally not advised as it *can* make you more susceptible to keyloggers and other attacks. What I do, and what I'd recommend you do as well, is to run `newgrp input` in your terminal before starting the application. This adds your user to the input group **ONLY** for your current shell. 
+**WARNING:** Having your user be a member of the input group is generally not advised as it *can* make you more susceptible to keyloggers and other attacks. What I do, and what I'd recommend you do as well, is to run `sudo -g input bash` in your terminal before starting the application. This adds your user to the input group **ONLY** for your current shell. 
 
 ### Arch:
 ```shell
