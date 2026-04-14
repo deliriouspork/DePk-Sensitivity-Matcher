@@ -8,6 +8,8 @@ Heavily inspired by [Kovaak's Sensitivity Matcher](https://github.com/KovaaK/Sen
 ## Installation
 Only *officially* support on Arch as I havn't the means (nor the inclination) to test on other versions. Should work just swimmingly on *most* other distributions.
 
+I have also provided a binary. I wouldn't recommend it as it is quite large but is always an option.
+
 Due to the waylands security architecture this program **WILL NOT WORK** unless the user running the program is a member of the **input** group.
 
 **WARNING:** Having your user be a member of the input group is generally not advised as it *can* make you more susceptible to keyloggers and other attacks. What I do, and what I'd recommend you do as well, is to run `newgrp input` in your terminal before starting the application. This adds your user to the input group **ONLY** for your current shell. 
@@ -19,6 +21,12 @@ cd cd DePk\ Sensitivity\ Matcher/
 python main.py
 ```
 Note: Requires python, python-evdev, and python-pyqt6.
+
+### Binary:
+* Download the [binary](https://github.com/deliriouspork/DePk-Sensitivity-Matcher/releases).
+* chmod +x DePkSensMatch
+* ./ DePkSensMatch
+Note: Created with pyinstaller --noconfirm --onefile --windowed --add-data "mainwindow.ui:." main.py
 
 ## Usage
 Run the tool and enter your sensitivity and game/engine. Open the game you wish to set your sensitivity in and press `ALT+BACKSPACE`. Fiddle with your sensitivity in-game until `ALT+BACKSPACE` performs a perfect (or close to a) 360 degree rotation.
