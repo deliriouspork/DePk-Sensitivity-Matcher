@@ -79,7 +79,7 @@ class SensitivityMatcher:
 		self.worker.hotkey_triggered.connect(self._handle_hotkey)
 		self.window.presetYaw.currentTextChanged.connect(self._on_yaw_preset_change)
 		self.window.sens.textChanged.connect(self._update_increment) 
-		self.window.yaw.textChanged.connect(self._update_increment)
+		self.window.yaw.textChanged.connect(self._on_yaw_changed)
 		self.app.aboutToQuit.connect(self._on_quit)
 
 	def _handle_hotkey(self):
@@ -96,6 +96,18 @@ class SensitivityMatcher:
 		preset = self.window.presetYaw.currentText()
 		if preset in YAW_PRESETS:
 			self.window.yaw.setText(YAW_PRESETS[preset])
+
+	def _check_if_preset(self):
+		yaw = self.window.yaw.text()
+		if yaw in YAW_PRESETS.values():
+			preset_name = [name for name, val in YAW_PRESETS.items() if val == yaw][0]
+			self.window.presetYaw.setCurrentText(preset_name)
+		else:
+			self.window.presetYaw.setCurrentIndex(3)
+
+	def _on_yaw_changed(self):
+		self._update_increment()
+		self._check_if_preset()
 
 	def _update_increment(self):
 		try:
