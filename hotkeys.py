@@ -1,5 +1,6 @@
-import evdev, time
+import evdev
 from evdev import InputDevice, ecodes, UInput
+import time
 import selectors
 from PyQt6 import QtCore
 
@@ -8,8 +9,9 @@ class GlobalHotkeyWorker(QtCore.QThread):
 
     def __init__(self):
         super().__init__()
+        self._running = True
         # Define a virtual mouse that can move relatively (REL_X)
-        # and has a left click (BTN_LEFT)
+        # and has a left click (BTN_LEFT) DONT REMOVE THAT SHIT FOR SOME FUCKING REASON IT BREAKS EVEN THOUGH ITS NOT FUCKIN USED AT ALL
         capabilities = {
             ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
             ecodes.EV_KEY: [ecodes.BTN_LEFT]
@@ -17,13 +19,9 @@ class GlobalHotkeyWorker(QtCore.QThread):
         self.vmouse = UInput(capabilities, name="Sensitivity-Matcher-Virtual-Mouse")
 
     def move_mouse_relative(self, total_x, speed_multiplier):
-        # Base step size is 100 pixels multiply by speed.
         step_size = 100 * speed_multiplier
-
-        # Determine direction
         direction = 1 if total_x > 0 else -1
         remaining = abs(total_x)
-
         while remaining > 0:
             move = min(step_size, remaining)
             self.vmouse.write(ecodes.EV_REL, ecodes.REL_X, int(move * direction))
@@ -31,19 +29,19 @@ class GlobalHotkeyWorker(QtCore.QThread):
             remaining -= move
             time.sleep(0.001)
 
+    def stop(self):
+        self._running = False
+
     def run(self):
         devices = [InputDevice(path) for path in evdev.list_devices()]
-        selector = selectors.DefaultSelector()
-        
+        selector = selectors.DefaultSelector() 
         for dev in devices:
             if ecodes.EV_KEY in dev.capabilities():
                 selector.register(dev, selectors.EVENT_READ)
-
         active_keys = set()
         print(f"Hotkey listener started on {len(devices)} devices.")
-
         try:
-            while True:
+            while self._running:
                 for key, mask in selector.select():
                     device = key.fileobj
                     try:
@@ -53,7 +51,6 @@ class GlobalHotkeyWorker(QtCore.QThread):
                                     active_keys.add(event.code)
                                 elif event.value == 0: # Up
                                     active_keys.discard(event.code)
-
                                 # Alt + Backspace logic
                                 if event.code == ecodes.KEY_BACKSPACE and event.value == 1:
                                     if ecodes.KEY_LEFTALT in active_keys or ecodes.KEY_RIGHTALT in active_keys:
@@ -62,3 +59,6 @@ class GlobalHotkeyWorker(QtCore.QThread):
                         selector.unregister(device)
         except Exception as e:
             print(f"Error in hotkey thread: {e}")
+        finally:
+            self.vmouse.close()
+            print("Hotkey listener stopped cleanly.")
