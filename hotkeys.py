@@ -9,8 +9,10 @@ class GlobalHotkeyWorker(QtCore.QThread):
     def __init__(self):
         super().__init__()
         # Define a virtual mouse that can move relatively (REL_X)
+        # and has a left click (BTN_LEFT)
         capabilities = {
-            ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y]
+            ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
+            ecodes.EV_KEY: [ecodes.BTN_LEFT]
         }
         self.vmouse = UInput(capabilities, name="Sensitivity-Matcher-Virtual-Mouse")
 
