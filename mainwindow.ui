@@ -62,6 +62,11 @@
      <string>Rainbow Six Siege</string>
     </property>
    </item>
+   <item>
+    <property name="text">
+     <string>Custom</string>
+    </property>
+   </item>
   </widget>
   <widget class="QLabel" name="yawLabel">
    <property name="geometry">
@@ -92,7 +97,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>4</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="sensLabel">
@@ -124,7 +129,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>0.088</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLineEdit" name="yaw">
@@ -137,7 +142,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>0.022</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="incrementLabel">
@@ -201,7 +206,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>1</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="speedLabel">

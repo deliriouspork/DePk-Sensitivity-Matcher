@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 from PyQt6 import QtWidgets, uic
 from hotkeys import GlobalHotkeyWorker # import class from hotkeys.py
 
@@ -17,14 +18,57 @@ YAW_PRESETS = {
     "Rainbow Six Siege": "0.002230",
 }
 
+DEFAULTS = {
+	"sens": "4.0",
+	"yaw": "0.022",
+	"speed": "1",
+	"preset_index": 0
+}
+
 class SensitivityMatcher:
 	def __init__(self):
 		self.app = QtWidgets.QApplication(sys.argv)
 		self.window = uic.loadUi(resource_path("mainwindow.ui")) # pyinstaller fix
 		self.worker = GlobalHotkeyWorker()
 		self.worker.start()
+		self.settings_path = "settings.json"
+		self._load_settings()
+		self._update_increment()
 		self.window.mousePressEvent = self._mouse_press_event
 		self._connect_signals()
+
+	def _load_settings(self):
+		if os.path.exists(self.settings_path):
+			try:
+				with open(self.settings_path, "r") as f:
+					data = json.load(f)
+				self.window.sens.setText(data.get("sens", DEFAULTS["sens"]))
+				self.window.yaw.setText(data.get("yaw", DEFAULTS["yaw"]))
+				self.window.speed.setText(data.get("speed", DEFAULTS["speed"]))
+				self.window.presetYaw.setCurrentIndex(data.get("preset_index", DEFAULTS["preset_index"]))
+				print("Settings loaded.")
+			except Exception as e:
+				print(f"Failed to load settings: {e}")
+		else:
+			print("No settings file found. Applying defaults.")
+			self.window.sens.setText(DEFAULTS["sens"])
+			self.window.yaw.setText(DEFAULTS["yaw"])
+			self.window.speed.setText(DEFAULTS["speed"])
+			self.window.presetYaw.setCurrentIndex(DEFAULTS["preset_index"])
+
+	def _save_settings(self):
+		data = {
+            "sens": self.window.sens.text(),
+            "yaw": self.window.yaw.text(),
+            "speed": self.window.speed.text(),
+            "preset_index": self.window.presetYaw.currentIndex()
+        }
+		try:
+			with open(self.settings_path, "w") as f:
+				json.dump(data, f, indent=4)
+			print("Settings saved.")
+		except Exception as e:
+			print(f"Failed to save settings: {e}")
 
 	def _mouse_press_event(self, event):
 		focused_widget = self.window.focusWidget()
@@ -33,9 +77,9 @@ class SensitivityMatcher:
 
 	def _connect_signals(self):
 		self.worker.hotkey_triggered.connect(self._handle_hotkey)
-		self.window.presetYaw.currentTextChanged.connect(self._on_yaw_change)
-		self.window.sens.textChanged.connect(self._on_sens_change) 
-		self.window.yaw.textChanged.connect(self._on_sens_change)
+		self.window.presetYaw.currentTextChanged.connect(self._on_yaw_preset_change)
+		self.window.sens.textChanged.connect(self._update_increment) 
+		self.window.yaw.textChanged.connect(self._update_increment)
 		self.app.aboutToQuit.connect(self._on_quit)
 
 	def _handle_hotkey(self):
@@ -48,12 +92,12 @@ class SensitivityMatcher:
 		except ValueError:
 			print("Check your Yaw/Sens fields - they must be numbers!")
 
-	def _on_yaw_change(self):
+	def _on_yaw_preset_change(self):
 		preset = self.window.presetYaw.currentText()
 		if preset in YAW_PRESETS:
 			self.window.yaw.setText(YAW_PRESETS[preset])
 
-	def _on_sens_change(self):
+	def _update_increment(self):
 		try:
 			yaw, sens = self._get_yaw_sens()
 			increment = yaw * sens
@@ -67,6 +111,7 @@ class SensitivityMatcher:
 
 	def _on_quit(self):
 		print("Closing application...")
+		self._save_settings()
 		self.worker.stop()
 		self.worker.wait()
 
