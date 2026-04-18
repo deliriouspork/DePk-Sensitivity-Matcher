@@ -10,11 +10,17 @@ Only *officially* supported on Arch as I haven't the means (nor the inclination)
 
 I have also provided a binary. I wouldn't recommend it as it is quite large but is always an option.
 
-Due to Wayland's security architecture this program **WILL NOT WORK** unless the user running the program is a member of the **input** group.
+When **NOT** installing from AUR, due to Wayland's security architecture this program **WILL NOT WORK** unless the user running the program is a member of the **input** group. If you are downloading from the AUR, this is not necessary.
 
 **WARNING:** Having your user be a member of the input group is generally not advised as it *can* make you more susceptible to keyloggers and other attacks. What I do, and what I'd recommend you do as well, is to run `sudo -E -g input bash` in your terminal before starting the application. This adds your user to the input group **ONLY** for your current shell. 
 
 ### Arch:
+```shell
+yay -S depk-sensitivity-matcher
+```
+Note: Or use AUR helper of choice.
+
+### Other:
 ```shell
 git clone https://github.com/deliriouspork/DePk-Sensitivity-Matcher
 cd DePk-Sensitivity-Matcher/
@@ -33,7 +39,6 @@ Note: Created with pyinstaller --noconfirm --onefile --windowed --add-data "main
 Run the tool and enter your sensitivity and game/engine. Open the game you wish to set your sensitivity in and press `ALT+BACKSPACE`. Fiddle with your sensitivity in-game until `ALT+BACKSPACE` performs a perfect (or close to a) 360 degree rotation.
 
 ### TODO (depending on if anyone actually uses this garbled together POS python code written by an inexperienced Forestry student in his free time)
-* Add error popups when something doesn't go right
 * Add more presets
 * Make my shit code less shit (better but not there yet)
 
