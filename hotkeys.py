@@ -6,19 +6,29 @@ from PyQt6 import QtCore
 
 class GlobalHotkeyWorker(QtCore.QThread):
     hotkey_triggered = QtCore.pyqtSignal()
+    init_failed = QtCore.pyqtSignal(str)
+    runtime_error = QtCore.pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self._running = True
+        self.vmouse = None
         # Define a virtual mouse that can move relatively (REL_X)
         # and has a left click (BTN_LEFT) DONT REMOVE THAT SHIT FOR SOME FUCKING REASON IT BREAKS EVEN THOUGH ITS NOT FUCKIN USED AT ALL
-        capabilities = {
-            ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
-            ecodes.EV_KEY: [ecodes.BTN_LEFT]
-        }
-        self.vmouse = UInput(capabilities, name="Sensitivity-Matcher-Virtual-Mouse")
+        try:
+            capabilities = {
+                ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
+                ecodes.EV_KEY: [ecodes.BTN_LEFT]
+            }
+            self.vmouse = UInput(capabilities, name="Sensitivity-Matcher-Virtual-Mouse")
+        except PermissionError:
+            self.init_failed.emit("Permission denied creating virtual mouse.\n\nMake sure you're running with input group access:\n\nsudo -E -g input bash")
+        except Exception as e:
+            self.init_failed.emit(f"Failed to initialise virtual mouse:\n\n{e}")
 
     def move_mouse_relative(self, total_x, speed_multiplier):
+        if self.vmouse is None:
+            return
         step_size = 100 * speed_multiplier
         direction = 1 if total_x > 0 else -1
         remaining = abs(total_x)
@@ -39,10 +49,9 @@ class GlobalHotkeyWorker(QtCore.QThread):
             if ecodes.EV_KEY in dev.capabilities():
                 selector.register(dev, selectors.EVENT_READ)
         active_keys = set()
-        print(f"Hotkey listener started on {len(devices)} devices.")
         try:
             while self._running:
-                for key, mask in selector.select():
+                for key, mask in selector.select(timeout=1):
                     device = key.fileobj
                     try:
                         for event in device.read():
@@ -58,7 +67,7 @@ class GlobalHotkeyWorker(QtCore.QThread):
                     except (OSError, RuntimeError):
                         selector.unregister(device)
         except Exception as e:
-            print(f"Error in hotkey thread: {e}")
+            self.runtime_error.emit(f"Hotkey listener crashed:\n\n{e}")
         finally:
-            self.vmouse.close()
-            print("Hotkey listener stopped cleanly.")
+            if self.vmouse is not None:
+                self.vmouse.close()

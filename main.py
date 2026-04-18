@@ -32,6 +32,8 @@ class SensitivityMatcher:
 		self.app = QtWidgets.QApplication(sys.argv)
 		self.window = uic.loadUi(resource_path("mainwindow.ui")) # pyinstaller fix
 		self.worker = GlobalHotkeyWorker()
+		self.worker.init_failed.connect(lambda msg: self._show_error("Startup Error", msg))
+		self.worker.runtime_error.connect(lambda msg: self._show_error("Runtime Error", msg))
 		self.worker.start()
 		self.settings_path = "settings.json"
 		self._load_settings()
@@ -48,15 +50,20 @@ class SensitivityMatcher:
 				self.window.yaw.setText(data.get("yaw", DEFAULTS["yaw"]))
 				self.window.speed.setText(data.get("speed", DEFAULTS["speed"]))
 				self.window.presetYaw.setCurrentIndex(data.get("preset_index", DEFAULTS["preset_index"]))
-				print("Settings loaded.")
+			except json.JSONDecodeError:
+				self._show_warning("Settings Warning", "settings.json is corrupted. Loading defaults.")
+				self._apply_defaults()
 			except Exception as e:
-				print(f"Failed to load settings: {e}")
+				self._show_warning("Settings Warning", f"Could not load settings:\n\n{e}\n\nLoading defaults.")
+				self._apply_defaults()
 		else:
-			print("No settings file found. Applying defaults.")
-			self.window.sens.setText(DEFAULTS["sens"])
-			self.window.yaw.setText(DEFAULTS["yaw"])
-			self.window.speed.setText(DEFAULTS["speed"])
-			self.window.presetYaw.setCurrentIndex(DEFAULTS["preset_index"])
+			self._apply_defaults()
+
+	def _apply_defaults(self):
+		self.window.sens.setText(DEFAULTS["sens"])
+		self.window.yaw.setText(DEFAULTS["yaw"])
+		self.window.speed.setText(DEFAULTS["speed"])
+		self.window.presetYaw.setCurrentIndex(DEFAULTS["preset_index"])
 
 	def _save_settings(self):
 		data = {
@@ -68,9 +75,8 @@ class SensitivityMatcher:
 		try:
 			with open(self.settings_path, "w") as f:
 				json.dump(data, f, indent=4)
-			print("Settings saved.")
 		except Exception as e:
-			print(f"Failed to save settings: {e}")
+			self._show_error("Save Error", f"Failed to save settings:\n\n{e}")
 
 	def _mouse_press_event(self, event):
 		focused_widget = self.window.focusWidget()
@@ -85,14 +91,15 @@ class SensitivityMatcher:
 		self.app.aboutToQuit.connect(self._on_quit)
 
 	def _handle_hotkey(self):
-		print(">>> Performing 360 Turn <<<")
 		try:
 			yaw, sens = self._get_yaw_sens()
 			speed_mult = float(self.window.speed.text())
 			total_counts = 360 / (yaw * sens)
 			self.worker.move_mouse_relative(total_counts, speed_mult)
 		except ValueError:
-			print("Check your Yaw/Sens fields - they must be numbers!")
+			self._show_error("Invalid Input", "Yaw, Sensitivity, and Speed must all be valid numbers.")
+		except ZeroDivisionError:
+			self._show_error("Invalid Input", "Yaw and Sensitivity cannot be zero.")
 
 	def _on_yaw_preset_change(self):
 		preset = self.window.presetYaw.currentText()
@@ -115,17 +122,24 @@ class SensitivityMatcher:
 	def _update_increment(self):
 		try:
 			yaw, sens = self._get_yaw_sens()
+			if yaw == 0 or sens == 0:
+				raise ZeroDivisionError
 			increment = yaw * sens
 			formatted_inc = f"{increment:.10f}".rstrip('0').rstrip('.')
 			self.window.increment.setText(formatted_inc)
-		except ValueError:
-			print("Check your Yaw/Sens fields - they must be numbers!")
+		except (ValueError, ZeroDivisionError):
+			self.window.increment.setText("?")
 
 	def _get_yaw_sens(self):
 		return float(self.window.yaw.text()), float(self.window.sens.text())
 
+	def _show_error(self, title, message):
+		QtWidgets.QMessageBox.critical(self.window, title, message)
+
+	def _show_warning(self, title, message):
+		QtWidgets.QMessageBox.warning(self.window, title, message)
+
 	def _on_quit(self):
-		print("Closing application...")
 		self._save_settings()
 		self.worker.stop()
 		self.worker.wait()
