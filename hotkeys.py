@@ -44,6 +44,9 @@ class GlobalHotkeyWorker(QtCore.QThread):
 
     def run(self):
         devices = [InputDevice(path) for path in evdev.list_devices()]
+        if not devices:
+            self.runtime_error.emit("No input devices found.\n\nThe application may not have input group access.")
+            return
         selector = selectors.DefaultSelector() 
         for dev in devices:
             if ecodes.EV_KEY in dev.capabilities():

@@ -30,7 +30,7 @@ DEFAULTS = {
 class SensitivityMatcher:
 	def __init__(self):
 		self.app = QtWidgets.QApplication(sys.argv)
-		self.app.setApplicationName("depk-sensitivity-matcher")
+		self.app.setDesktopFileName("depk-sensitivity-matcher")
 		self.window = uic.loadUi(resource_path("mainwindow.ui")) # pyinstaller fix
 		self.worker = GlobalHotkeyWorker()
 		self.worker.init_failed.connect(lambda msg: self._show_error("Startup Error", msg))
