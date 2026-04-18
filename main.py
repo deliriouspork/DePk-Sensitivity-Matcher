@@ -13,9 +13,11 @@ def resource_path(relative_path):
 	return os.path.join(base_path, relative_path)
 
 YAW_PRESETS = {
-    "Quake/Source": "0.022",
-    "Overwatch/Valorant": "0.0066",
-    "Rainbow Six Siege": "0.002230",
+    "Quake/Source/Apex": "0.022",
+    "Overwatch/Valorant/CoD": "0.0066",
+    "Rainbow Six Siege": "0.02",
+	"Fortnite": "0.002201",
+	"Battlefield/Frostbite": "0.002",
 }
 
 DEFAULTS = {
@@ -103,7 +105,8 @@ class SensitivityMatcher:
 			preset_name = [name for name, val in YAW_PRESETS.items() if val == yaw][0]
 			self.window.presetYaw.setCurrentText(preset_name)
 		else:
-			self.window.presetYaw.setCurrentIndex(3)
+			last_index = self.window.presetYaw.count() - 1
+			self.window.presetYaw.setCurrentIndex(last_index)
 
 	def _on_yaw_changed(self):
 		self._update_increment()
