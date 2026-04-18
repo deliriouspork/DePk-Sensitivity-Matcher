@@ -35,7 +35,7 @@ class SensitivityMatcher:
 		self.worker.init_failed.connect(lambda msg: self._show_error("Startup Error", msg))
 		self.worker.runtime_error.connect(lambda msg: self._show_error("Runtime Error", msg))
 		self.worker.start()
-		self.settings_path = "settings.json"
+		self.settings_path = os.path.expanduser("~/.config/depk-sensitivity-matcher/settings.json")
 		self._load_settings()
 		self._update_increment()
 		self.window.mousePressEvent = self._mouse_press_event
@@ -66,6 +66,7 @@ class SensitivityMatcher:
 		self.window.presetYaw.setCurrentIndex(DEFAULTS["preset_index"])
 
 	def _save_settings(self):
+		os.makedirs(os.path.dirname(self.settings_path), exist_ok=True)
 		data = {
             "sens": self.window.sens.text(),
             "yaw": self.window.yaw.text(),
