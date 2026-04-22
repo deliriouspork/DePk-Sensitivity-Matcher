@@ -1,3 +1,8 @@
+> ⚠️ **This project has been rewritten in Rust and is no longer maintained.**
+> The new version is faster, has no Python dependencies, and works better on Wayland.
+>
+> **➜ [DePk Sensitivity Matcher (Rust)](https://github.com/deliriouspork/DePk-Sensitivity-Matcher-Rust)**
+
 <img width="391" height="240" alt="mainwindow" src="https://github.com/user-attachments/assets/a79e7a66-830e-4118-a4be-723d5ecd7df1" />
 
 # DePk Sensitivity Matcher
